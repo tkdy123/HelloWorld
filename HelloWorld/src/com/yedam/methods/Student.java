@@ -54,7 +54,7 @@ public class Student {
 	public void setMathScore(int mathScore) {
 		this.mathScore = mathScore;
 	}
-	// showInfo()
+	// showInfo() 메소드.
 	public String showInfo() {
 		return "학번 : " + stdNo + ", 이름 : " + stdName + ", 영어 : " + engScore + ", 수학 :" + mathScore;
 	}
