@@ -68,7 +68,7 @@ public class MainExe {
 		boolean run = true;
 
 		while (run) {
-			System.out.println("1.글 등록 2.목록 3.수정 4.삭제 9.상위메뉴로 이동");
+			System.out.println("1.글 등록 2.목록 3.수정 4.삭제 5.상세조회(글번호) 9.상위메뉴로 이동");
 			System.out.println("선택 >> ");
 			int menu = Integer.parseInt(scn.nextLine());
 			switch (menu) {
