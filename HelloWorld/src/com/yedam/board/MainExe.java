@@ -8,9 +8,10 @@ public class MainExe {
 	static BoardExe bexe = new BoardExe(); // 필드.
 
 	public static void main(String[] args) {
+		
 		boolean run = true;
 
-		MemberExe mexe = new MemberExe(); // 인스턴스 생성.
+//		MemberExe mexe = new MemberExe(); // 인스턴스 생성. static 사용시 필요없음.
 
 		while (run) {
 			System.out.println("1.회원등록 2.목록 3.게시판 9.종료");
@@ -28,7 +29,7 @@ public class MainExe {
 				System.out.println("회원 연락처 >> ");
 				String phone = scn.nextLine();
 
-				boolean result = mexe.addMember(new Member(id, pw, name, phone));
+				boolean result = MemberExe.addMember(new Member(id, pw, name, phone));
 				if (result) {
 					System.out.println("정상 등록되었습니다.");
 				} else {
@@ -36,7 +37,7 @@ public class MainExe {
 				}
 				break;
 			case 2: // 목록
-				Member[] list = mexe.memberList();
+				Member[] list = MemberExe.memberList();
 				for (Member member : list) {
 					if (member != null) {
 						System.out.println(member.showInfo());
@@ -48,7 +49,7 @@ public class MainExe {
 				id = scn.nextLine();
 				System.out.println("회원 비밀번호 >> ");
 				pw = scn.nextLine();
-				if (mexe.login(id, pw)) { // id & pw 체크.
+				if (MemberExe.login(id, pw)) { // id & pw 체크.
 					boardMethod(id); // 로그인 한 사용자 아이디를 활용.
 				} else {
 					System.out.println("id와 pw를 확인하세요");
