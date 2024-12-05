@@ -4,6 +4,7 @@ package com.yedam.student;
  * 학생번호, 학생이름, 영어점수, 수학점수 
  * 
  */
+
 public class Student {
 	public int studentNum; // 필드.
 	public String studentName; // 
