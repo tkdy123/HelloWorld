@@ -14,7 +14,30 @@ import java.util.ArrayList;
 
 public class StudentDAO extends DAO {
 	
-	// 상세조회. 반환값 : boolean, 매개값 : Student, 메소드 : selectStudent.
+	// login() => 반환:boolean, 매개값: id, pw
+	public String login(String id, String pw) {
+		getConn();
+		String sql = "select * from tbl_member where member_id = ? and member_pw = ?";
+		
+		try {
+			psmt = conn.prepareStatement(sql); // 쿼리 실행, 결과 반환.
+			psmt.setString(1, id);
+			psmt.setString(2, pw);
+			rs = psmt.executeQuery();
+			while(rs.next()) {
+				return rs.getString("member_name");
+			} 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {			
+			disConnect(); // 연결 해제.
+		}
+		// 반환값.
+		return null; // 조회된 정보가 없을 경우 null.
+	}
+		
+	
+	// 상세조회. 반환값 : boolean, 매개값 : Student 메소드 : selectStudent.
 	public Student selectStudent(String sno) {
 		getConn(); // 연결.
 		// 조회 결과를 반환.
@@ -45,26 +68,20 @@ public class StudentDAO extends DAO {
 		getConn();
 		String sql = "update tbl_student set eng_score = ?, math_score = ? where std_no = ?";
 		// 조회 결과를 반환.
-		ArrayList<Student> studList = new ArrayList<Student>();
 		try {
-			psmt = conn.prepareStatement(sql); // 쿼리 실행, 결과 반환.
-			rs = psmt.executeQuery();
-
-			// 반복 ArrayList에 담는 작업.
-			while (rs.next()) {
-				Student stud = new Student();
-				stud.setStdNo(rs.getString("std_no"));
-				stud.setStdName(rs.getString("std_name"));
-				stud.setStdPhone(rs.getString("std_phone"));
-
-				studList.add(stud); // ArrayList에 추가.
+			psmt = conn.prepareStatement(sql);
+			psmt.setInt(1, std.getEngScore()); // std_name
+			psmt.setInt(2, std.getMathScore()); // std_phone
+			psmt.setString(3, std.getStdNo()); // std_no
+			int r = psmt.executeUpdate(); // 쿼리실행.
+			if (r > 0) {
+				return true; // 정상등록.
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {			
-			disConnect(); // 연결 해제.
+		} finally {
+			disConnect();
 		}
-		// 반환값.
 		return false;
 	}
 	
@@ -91,15 +108,26 @@ public class StudentDAO extends DAO {
 		return false;
 	}
 
-	// 학생목록.
-	public ArrayList<Student> studentList() {
+	// 학생목록. 
+	// 검색조건(학생이름, 연락처, 영어, 수학 검색조건 + 정렬 조건 ) 
+	public ArrayList<Student> studentList(Search search) {
 		getConn(); // 연결.
 		// 조회 결과를 반환.
 		ArrayList<Student> studList = new ArrayList<Student>();
-
-		String sql = "select * from tbl_student";
+		
+//		to_char(creation_date, 'yyyy-mm-dd hh24:mi:ss') creation_date // Student.java 에서 String creation_date 했을때 사용.
+		String sql = "select std_no, std_name, std_phone, eng_score, math_score, creation_date  from tbl_student where std_name like '%'||?||'%' and std_phone like '%'||?||'%' and eng_score >= ? ";
+		if(search.getOrderBy().equals("std_no")) {
+			sql += " order by std_no";
+		} else if (search.getOrderBy().equals("std_name")) {
+			sql += " order by std_name";
+		}
+		
 		try {
 			psmt = conn.prepareStatement(sql); // 쿼리 실행, 결과 반환.
+			psmt.setString(1, search.getName());
+			psmt.setString(2, search.getPhone());
+			psmt.setInt(3, search.getEngScore());
 			rs = psmt.executeQuery();
 
 			// 반복 ArrayList에 담는 작업.
@@ -108,6 +136,8 @@ public class StudentDAO extends DAO {
 				stud.setStdNo(rs.getString("std_no"));
 				stud.setStdName(rs.getString("std_name"));
 				stud.setStdPhone(rs.getString("std_phone"));
+				stud.setEngScore(rs.getInt("eng_score"));
+				stud.setCreationDate(rs.getDate("creation_date"));
 
 				studList.add(stud); // ArrayList에 추가.
 			}

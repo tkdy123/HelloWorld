@@ -6,12 +6,14 @@ public class MainExe {
 
 	static Scanner scn = new Scanner(System.in); // 필드.
 	static BoardExe bexe = new BoardExe(); // 필드.
-
+    static MemberExe mexe = new MemberExe();
 	public static void main(String[] args) {
 		
 		boolean run = true;
+		
+		// 로그인 기능. 
 
-//		MemberExe mexe = new MemberExe(); // 인스턴스 생성. static 사용시 필요없음.
+		 // 인스턴스 생성. static 사용시 필요없음.
 
 		while (run) {
 			System.out.println("1.회원등록 2.목록 3.게시판 9.종료");
