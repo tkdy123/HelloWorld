@@ -6,17 +6,34 @@
 <!-- board.jsp 원래 있던 부분. -->
 <h3>글상세화면(board.jsp)</h3>
 <%
-BoardVO bvo = (BoardVO) request.getAttribute("board"); 
+BoardVO bvo = (BoardVO) request.getAttribute("board");
 %>
-<table class="table">
-	<tr>
-		<th>글번호</th>
-		<td><%=bvo.getBoardNo()%></td>
-	</tr>
-	<tr>
-		<th>내용</th>
-		<td><%=bvo.getContent()%></td>
-	</tr>
-</table>
+<form action="modifyForm.do">
+	<table class="table">
+		<tr>
+			<th>글번호</th>
+			<td><%=bvo.getBoardNo()%></td>
+			<th>작성자</th>
+			<td><%=bvo.getWriter()%></td>
+		</tr>
+		<tr>
+			<th>제목</th>
+			<td><%=bvo.getTitle()%></td>
+		</tr>
+		<tr>
+			<th>내용</th>
+			<td colspan="3"><%=bvo.getContent()%></td>
+		</tr>
+		<tr>
+			<th>작성일시</th>
+			<td><%=bvo.getCreationDate()%></td>
+			<th>조회수</th>
+			<td><%=bvo.getViewCnt()%></td>
+		</tr>
+		<tr>
+			<td colspan="4" align="center"><input type="submit" class="btn btn-warning" value="수정화면"></td>
+		</tr>
+	</table>
+</form>
 <!-- board.jsp 원래 있던 부분. -->
 <jsp:include page="../includes/footer.jsp"></jsp:include>

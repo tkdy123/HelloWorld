@@ -25,7 +25,7 @@
 					class="list-group-item list-group-item-action list-group-item-light p-3"
 					href="boardList.do">게시글목록</a> <a
 					class="list-group-item list-group-item-action list-group-item-light p-3"
-					href="#!">Shortcuts</a> <a
+					href="boardForm.do">글등록화면</a> <a
 					class="list-group-item list-group-item-action list-group-item-light p-3"
 					href="#!">Overview</a> <a
 					class="list-group-item list-group-item-action list-group-item-light p-3"
