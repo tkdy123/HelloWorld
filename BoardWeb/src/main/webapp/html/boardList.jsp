@@ -24,7 +24,7 @@
 					%>
 					<tr>
 						<td align="center"><a
-							href="board.action?board_no=<%=bvo.getBoardNo()%>"><%=bvo.getBoardNo()%></a></td>
+							href="board.do?board_no=<%=bvo.getBoardNo()%>"><%=bvo.getBoardNo()%></a></td>
 						<td><%=bvo.getTitle()%></td>
 						<td><%=bvo.getWriter()%></td>
 						<td><%=bvo.getCreationDate()%></td>
