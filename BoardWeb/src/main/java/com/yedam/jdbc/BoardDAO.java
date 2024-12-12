@@ -9,23 +9,23 @@ import com.yedam.common.SearchDTO;
 import com.yedam.vo.BoardVO;
 
 public class BoardDAO extends DAO {
-    
+
 	// 회원정보 로그인 진행.
 	public String login(String id, String pw) {
 		getConn();
 		String sql = "select * from tbl_member where member_id = ? and member_pw = ?";
-		
+
 		try {
 			psmt = conn.prepareStatement(sql);
 			psmt.setString(1, id);
 			psmt.setString(2, pw);
-			
+
 			// 결과조회.
 			rs = psmt.executeQuery();
 			if (rs.next()) {
 				return rs.getString("member_name");
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -33,28 +33,27 @@ public class BoardDAO extends DAO {
 		}
 		return null; // 조회결과 없음.
 	}
-	
-	
-	
+
 	// 실제건수.
 	public int selectCount(SearchDTO search) {
 		getConn();
-		String sql = "select count(1) from tbl_board";
-		
+		String sql = "select count(1) from tbl_board ";
+
 		try {
 			psmt = conn.prepareStatement(sql);
-			rs = psmt.executeQuery(); // 조회.
-			if (rs.next()) {
-				return rs.getInt(1);
-			}
-		} catch (SQLException e) {
+			rs = psmt.executeQuery();
+		if(rs.next()) {
+			return rs.getInt(1);
+		 }
+		
+		}catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			disConnect();
 		}
 		return 0;
 	}
-	
+
 	// 수정기능.(내용, 제목)
 	public boolean updateBoard(BoardVO board) {
 		getConn();
@@ -76,9 +75,7 @@ public class BoardDAO extends DAO {
 		}
 		return false;
 	}
-	
-	
-	
+
 	// 상세조회. 파라미터(int boardNo) selectBoard 반환값: BoardVO.
 	public BoardVO selectBoard(int boardNo) {
 		getConn();
@@ -133,47 +130,45 @@ public class BoardDAO extends DAO {
 		return false;
 	}
 
-	// 목록.
+	// 목록. parameter(매개변수).
 	public List<BoardVO> boardList(SearchDTO search) {
 		getConn();
-		String sql = "select b.* "
-				+ "   from (select rownum rn, a.* " //
-				+ "         from (select * " // 
-				+ "               from tbl_board "; // 
-		        // Title 검색 조건 => title 컬럼에서 값을 조회.
-		        if(search.getSearchCondition() != null && search.getKeyword() != null) {
-		        	if(search.getSearchCondition().equals("T")) {
-		        		sql += "             where title like '%'||?||'%' ";
-		        	}
-		        	// Writer 검색 조건 => writer 컬럼에서 값을 조회.
-		        	else if(search.getSearchCondition().equals("W")) {
-		        		sql += "             where writer like '%'||?||'%'";
-		        	}
-		        	else if(search.getSearchCondition().equals("TW")) {
-		        		sql += "             where title like '%'||?||'%' or writer like '%'||?||'%'";
-		        	}		        	
-		        }
-				sql += "          order by board_no desc) a) b " //
+		String sql = "select b.* " + "   from (select rownum rn, a.* " //
+				+ "         from (select * " //
+				+ "               from tbl_board "; //
+		// Title 검색 조건 => title 컬럼에서 값을 조회.
+		if (search.getSearchCondition() != null && search.getKeyword() != null) {
+			if (search.getSearchCondition().equals("T")) {
+				sql += "             where title like '%'||?||'%' ";
+			}
+			// Writer 검색 조건 => writer 컬럼에서 값을 조회.
+			else if (search.getSearchCondition().equals("W")) {
+				sql += "             where writer like '%'||?||'%'";
+			} else if (search.getSearchCondition().equals("TW")) {
+				sql += "             where title like '%'||?||'%' or writer like '%'||?||'%'";
+			}
+		}
+		sql += "          order by board_no desc) a) b " //
 				+ "   where b.rn > (? - 1) * 5 " //
 				+ "   and   b.rn <= ? * 5";
 		List<BoardVO> result = new ArrayList<>(); // 반환값.
-        int cnt = 1;
+		int cnt = 1;
 		try {
 			psmt = conn.prepareStatement(sql);
-	        if(search.getSearchCondition() != null && search.getKeyword() != null) {
-	        	if(search.getSearchCondition().equals("T")) {
-	        		psmt.setString(cnt++, search.getKeyword()); // 첫번째 파라미터.				
-	        	} else if(search.getSearchCondition().equals("W")) {
-	        		psmt.setString(cnt++, search.getKeyword());	// 첫번째 파라미터.			
-	        	} else if(search.getSearchCondition().equals("TW")) {
-	        		psmt.setString(cnt++, search.getKeyword());	// 첫번째 파라미터.			
-	        		psmt.setString(cnt++, search.getKeyword());	// 두번째 파라미터.										
-	        	}	        	
-	        }
-			psmt.setInt(cnt++, search.getPage());				
+			if (search.getSearchCondition() != null && search.getKeyword() != null) {
+				if (search.getSearchCondition().equals("T")) {
+					psmt.setString(cnt++, search.getKeyword()); // 첫번째 파라미터.
+				} else if (search.getSearchCondition().equals("W")) {
+					psmt.setString(cnt++, search.getKeyword()); // 첫번째 파라미터.
+				} else if (search.getSearchCondition().equals("TW")) {
+					psmt.setString(cnt++, search.getKeyword()); // 첫번째 파라미터.
+					psmt.setString(cnt++, search.getKeyword()); // 두번째 파라미터.
+				}
+			}
+			psmt.setInt(cnt++, search.getPage());
 			psmt.setInt(cnt++, search.getPage());
 			System.out.println(sql);
-			
+
 			rs = psmt.executeQuery(); // 조회.
 
 			while (rs.next()) {
