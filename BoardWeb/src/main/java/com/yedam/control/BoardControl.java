@@ -6,6 +6,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 import com.yedam.common.Control;
 import com.yedam.jdbc.BoardDAO;
 import com.yedam.vo.BoardVO;
@@ -35,18 +37,32 @@ public class BoardControl implements Control{
 			
 		} else if(req.getMethod().equals("POST")) {
 			
+			String savePath = req.getServletContext().getRealPath("images"); // 파일 업로드 시 파일이 저장되는 위치
+			int maxSize = 1024 * 1024 * 5; // 5mb
+			// multipart 요청.
+			MultipartRequest mr = new MultipartRequest(
+					req // 요청정보.
+					,savePath // 저장 경로.
+					,maxSize // 업로드 파일의 최대 사이즈(5mb)
+					,"utf-8" // 인코딩.
+					, new DefaultFileRenamePolicy()     // 리네임정책.
+					);
+			
+			
 			// POST 요청일 경우에는 한글 인코딩 방식을 적용해줘야 함.
 			req.setCharacterEncoding("utf-8"); // tomcat 9.xx 버전은 이렇게 해야함.
 			
 			// 파라미터(title, content, writer)
-			String title = req.getParameter("title");
-			String content = req.getParameter("content");
-			String writer = req.getParameter("writer");
+			String title = mr.getParameter("title");
+			String content = mr.getParameter("content");
+			String writer = mr.getParameter("writer");
+			String img = mr.getFilesystemName("img"); // 리네임 정책에 의해 생성된 파일명.
 			
 			BoardVO board = new BoardVO();
 			board.setTitle(title);
 			board.setContent(content);
 			board.setWriter(writer);
+			board.setImg(img);
 			
 			if(bdao.insertBoard(board)) {
 				// 목록이동.
