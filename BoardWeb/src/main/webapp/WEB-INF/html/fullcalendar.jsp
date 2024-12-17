@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,6 +8,15 @@
 <script>
 
   document.addEventListener('DOMContentLoaded', function() {
+	let eventData;
+	
+	// eventData 에 저장하기 fullData.do
+	fetch('fullData.do')
+	  .then(result => result.json())
+	  .then(result => {
+		  eventData = result;
+	  
+		
     var calendarEl = document.getElementById('calendar');
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -21,55 +30,70 @@
       selectable: true,
       selectMirror: true,
       select: function(arg) {
-        var title = prompt('Event Title:');
+        var title = prompt('이벤트를 등록하세요:');
         if (title) {
-          calendar.addEvent({
-            title: title,
-            start: arg.start,
-            end: arg.end,
-            allDay: arg.allDay
-          })
-        }
+           console.log(arg);
+           // Ajax 호출.
+           fetch('addEvent.do?a='+title+'&b='+arg.startStr+'&c='+arg.endStr)
+            .then(result => result.json())
+            .then(result => {
+            	if(result.retCode == 'OK') {
+            	// 화면출력.
+              calendar.addEvent({
+                title: title,
+                start: arg.start,
+                end: arg.end,
+                allDay: arg.allDay
+            })            		
+           } // end of retCode == 'OK'
+          }) // end of then.
+          .catch(err => console.log(err));
+        } // 화면출력. end of title.
+        
         calendar.unselect()
       },
       eventClick: function(arg) {
         if (confirm('Are you sure you want to delete this event?')) {
-          arg.event.remove()
+           // 화면에서 이벤트 지우기.
+           console.log(arg);
+          fetch('removeEvent.do?title='+arg.event.title+'&sd='+arg.event.startStr)
+          .then(result => result.json())
+          .then(result => {
+        	  if(result.retCode == 'OK'){
+        		  arg.event.remove();
+        	  }
+          })
+          .catch(err => console.log(err));
         }
       },
       editable: true,
       dayMaxEvents: true, // allow "more" link when too many events
-      events: [
-        //{
-        //  title: 'All Day Event',
-        //  start: '2023-01-01'
-        //}
-      ]
+      events: eventData // [{},{},{} ..... {}]
     });
+      calendar.render();
+	  })
+	  .catch(err => console.log(err));
 
-    calendar.render();
   });
 
 </script>
 <style>
+body {
+	margin: 40px 10px;
+	padding: 0;
+	font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+	font-size: 14px;
+}
 
-  body {
-    margin: 40px 10px;
-    padding: 0;
-    font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-    font-size: 14px;
-  }
-
-  #calendar {
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-
+#calendar {
+	max-width: 1100px;
+	margin: 0 auto;
+}
 </style>
 </head>
 <body>
 
-  <div id='calendar'></div>
+	<div id='calendar'></div>
 
 </body>
 </html>
